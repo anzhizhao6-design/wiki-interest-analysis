@@ -3,6 +3,10 @@ import pandas as pd
 from wiki_search import search_wiki, save_to_csv
 from analyze_wiki import analyze_data
 
+df = pd.read_csv("wiki_results.csv")
+st.subheader("Recent Searches")
+st.dataframe(df.tail(10))
+
 st.title("Wikipedia Interest Analysis Tool")
 
 user_input = st.text_input("Enter keywords, separated by comma:")
