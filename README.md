@@ -5,6 +5,7 @@ This project implements a simple Python-based data pipeline that collects, store
 
 The system takes user input, retrieves relevant Wikipedia pages, extracts key information, and performs keyword-based analysis to identify interest categories.
 
+This project demonstrates a complete data pipeline from data collection to analysis, with both CLI and web-based user interfaces.
 
 ## How It Works
 
@@ -31,8 +32,15 @@ The system takes user input, retrieves relevant Wikipedia pages, extracts key in
 
 ## How to Run
 
+### Install Dependencies
+
 ```bash
-python3 main.py
+pip install requests beautifulsoup4 pandas streamlit
+```
+### Run with UI 
+
+```bash
+streamlit run app.py
 ```
 
 ## Skills Demonstrated
@@ -47,7 +55,7 @@ python3 main.py
 ## Possible Improvements
 
 - Implement real-time monitoring (e.g. periodic scraping)
-- Build a simple UI using Streamlit
 - Apply NLP techniques for more accurate analysis
 - Replace scraping with official APIs
 - Store data in a database instead of CSV
+- Improve the UI with better layout and visualization
