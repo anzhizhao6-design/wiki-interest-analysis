@@ -1,11 +1,17 @@
+import os
 import streamlit as st
 import pandas as pd
 from wiki_search import search_wiki, save_to_csv
 from analyze_wiki import analyze_data
 
-df = pd.read_csv("wiki_results.csv")
+CSV_FILE = "data/processed/wiki_results.csv"
+
 st.subheader("Recent Searches")
-st.dataframe(df.tail(10))
+if os.path.isfile(CSV_FILE):
+    df = pd.read_csv(CSV_FILE)
+    st.dataframe(df.tail(10))
+else:
+    st.info("No data yet. Run an analysis below to get started.")
 
 st.title("Wikipedia Interest Analysis Tool")
 

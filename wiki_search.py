@@ -5,7 +5,7 @@ import urllib.parse
 import os
 import time
 
-CSV_FILE = "wiki_results.csv"
+CSV_FILE = "data/processed/wiki_results.csv"
 
 def search_wiki(names):
     results = []
@@ -48,6 +48,7 @@ def search_wiki(names):
 
 
 def save_to_csv(results):
+    os.makedirs(os.path.dirname(CSV_FILE), exist_ok=True)
     file_exists = os.path.isfile(CSV_FILE)
 
     with open(CSV_FILE, "a", newline="", encoding="utf-8") as file:

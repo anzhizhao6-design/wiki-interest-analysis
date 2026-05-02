@@ -1,6 +1,6 @@
 import pandas as pd
 
-CSV_FILE = "wiki_results.csv"
+CSV_FILE = "data/processed/wiki_results.csv"
 
 interest_keywords = {
     "AI / Technology": ["artificial intelligence", "ai", "machine learning", "data", "computer", "technology"],
