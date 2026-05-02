@@ -1,48 +1,56 @@
-import os
 import streamlit as st
 import pandas as pd
-from wiki_search import search_wiki, save_to_csv
-from analyze_wiki import analyze_data
+from wiki_search import search_wiki
+from analyze_wiki import analyze_records
 
-CSV_FILE = "data/processed/wiki_results.csv"
-
-st.subheader("Recent Searches")
-if os.path.isfile(CSV_FILE):
-    df = pd.read_csv(CSV_FILE)
-    st.dataframe(df.tail(10))
-else:
-    st.info("No data yet. Run an analysis below to get started.")
+if "results" not in st.session_state:
+    st.session_state.results = []
 
 st.title("Wikipedia Interest Analysis Tool")
 
 user_input = st.text_input("Enter keywords, separated by comma:")
 
-if st.button("Run Analysis"):
+col1, col2 = st.columns([1, 1])
+with col1:
+    run = st.button("Run Analysis")
+with col2:
+    if st.button("Clear Session"):
+        st.session_state.results = []
+        st.rerun()
+
+if run:
     if not user_input.strip():
         st.warning("Please enter at least one keyword.")
     else:
-        names = user_input.split(",")
-
         with st.spinner("Collecting Wikipedia data..."):
-            results = search_wiki(names)
-            save_to_csv(results)
+            new_results = search_wiki(user_input.split(","))
+            st.session_state.results.extend(new_results)
+        st.success(f"Added {len(new_results)} result(s) to your session.")
 
-        st.success("Data collection completed!")
+if st.session_state.results:
+    results_df = pd.DataFrame(st.session_state.results)
 
-        st.subheader("Collected Results")
-        st.dataframe(pd.DataFrame(results))
+    st.subheader("This Session's Results")
+    st.dataframe(results_df[["keyword", "title", "url"]])
 
-        with st.spinner("Analyzing interests..."):
-            report = analyze_data()
+    report = analyze_records(st.session_state.results)
 
-        st.subheader("Interest Direction Scores")
-        scores_df = pd.DataFrame(
-            list(report["scores"].items()),
-            columns=["Category", "Score"]
-        )
+    st.subheader("Interest Direction Scores")
+    scores_df = pd.DataFrame(
+        list(report["scores"].items()),
+        columns=["Category", "Score"]
+    ).sort_values("Score", ascending=False)
+    st.dataframe(scores_df)
+    st.bar_chart(scores_df.set_index("Category"))
 
-        st.dataframe(scores_df)
-        st.bar_chart(scores_df.set_index("Category"))
+    st.subheader("Most Likely Interest Direction")
+    st.write(report["top_category"])
 
-        st.subheader("Most Likely Interest Direction")
-        st.write(report["top_category"])
+    st.download_button(
+        label="Download session results as CSV",
+        data=results_df.to_csv(index=False).encode("utf-8"),
+        file_name="wiki_results.csv",
+        mime="text/csv",
+    )
+else:
+    st.info("No data yet. Enter keywords above and click Run Analysis.")

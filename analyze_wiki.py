@@ -10,23 +10,18 @@ interest_keywords = {
     "Sports": ["sport", "player", "team", "coach", "competition"]
 }
 
-def analyze_data():
-    df = pd.read_csv(CSV_FILE)
-
+def analyze_records(records):
+    df = pd.DataFrame(records)
     text = " ".join(df["summary"].astype(str)).lower()
 
     scores = {}
-
     for category, keywords in interest_keywords.items():
-        score = 0
-        for w in keywords:
-            score += text.count(w.lower())
-        scores[category] = score
+        scores[category] = sum(text.count(w.lower()) for w in keywords)
 
     df["summary_length"] = df["summary"].astype(str).apply(len)
     longest = df.sort_values("summary_length", ascending=False).iloc[0]
 
-    report = {
+    return {
         "total_records": len(df),
         "columns": df.columns.tolist(),
         "preview": df[["keyword", "title"]],
@@ -37,7 +32,10 @@ def analyze_data():
         "top_category": max(scores, key=scores.get)
     }
 
-    return report
+
+def analyze_data():
+    df = pd.read_csv(CSV_FILE)
+    return analyze_records(df.to_dict("records"))
 
 
 if __name__ == "__main__":
